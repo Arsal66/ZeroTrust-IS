@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Toxicity Classifier{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'ZeroHate/css/styles.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="container header-content">
+                <div class="logo">
+                    <h1>ZeroHate</h1>
+                </div>
+                {% if user.is_authenticated %}
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a></li>
+                        <li>
+                            <form action="{% url 'logout' %}" method="post" id="logout-form">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-button">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <footer class="main-footer">
+            <div class="container">
+                <p>&copy; 2025 ZeroHate - Text Classification Tool</p>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="{% static 'ZeroHate/js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

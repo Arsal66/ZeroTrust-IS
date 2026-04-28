@@ -1,0 +1,40 @@
+{% extends 'ZeroHate/index.html' %}
+
+{% block title %}Log In - ZeroHate{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2 class="auth-title">Welcome Back</h2>
+            <p class="auth-subtitle">Log in to access ZeroHate</p>
+        </div>
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-field">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <div class="field-error">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-field">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                <div class="field-error">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Log In</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{% url 'signup' %}" class="text-link">Sign up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

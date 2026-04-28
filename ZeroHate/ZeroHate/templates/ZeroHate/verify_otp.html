@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    {% load static %}
+    <style>
+        input {
+            width: 40px;
+            text-align: center;
+            font-size: 18px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Enter OTP</h2>
+        <p>A One-Time Password (OTP) has been sent to your email. Please enter it below to verify your login.</p>
+
+        <form method="POST" id="otp-form">
+            {% csrf_token %}
+            <div style="display: flex; gap: 8px;">
+                {% for i in "123456" %}
+                <input type="text" name="otp{{ i }}" maxlength="1" id="otp{{ i }}" oninput="moveFocus(event)" onpaste="pasteOTP(event)" required>
+                {% endfor %}
+            </div>
+            <br>
+            <button type="submit">Verify OTP</button>
+        </form>        
+
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <p style="color:red;">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Move focus to the next input box after entering a value
+        function moveFocus(event) {
+            const currentInput = event.target;
+            const nextInput = currentInput.nextElementSibling;
+
+            // If the current input is filled, move focus to the next input
+            if (currentInput.value.length === 1 && nextInput) {
+                nextInput.focus();
+            }
+
+            // If the current input is empty and the previous input is filled, focus previous
+            if (currentInput.value.length === 0 && currentInput.previousElementSibling) {
+                currentInput.previousElementSibling.focus();
+            }
+        }
+
+        // Automatically fill all boxes when pasting in the first box
+        function pasteOTP(event) {
+            const input = event.target;
+            const otp = event.clipboardData.getData('text').slice(0, 6); // Get the first 6 characters
+
+            // Fill all OTP inputs with the pasted value
+            const inputs = document.querySelectorAll('input[name^="otp"]');
+            for (let i = 0; i < otp.length; i++) {
+                if (inputs[i]) {
+                    inputs[i].value = otp[i];
+                    // Move focus to the next field after pasting
+                    if (inputs[i].nextElementSibling) {
+                        inputs[i].nextElementSibling.focus();
+                    }
+                }
+            }
+        }
+
+        // Optionally, focus on the first input automatically when the page loads
+        document.getElementById('otp1').focus();
+    </script>
+</body>
+</html>

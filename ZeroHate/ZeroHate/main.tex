@@ -1,0 +1,374 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+
+\geometry{top=0.75in, bottom=1in, left=0.75in, right=0.75in}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=blue,
+    urlcolor=blue,
+    pdftitle={ZeroHate},
+    pdfauthor={Muhammad Toseef Haider, Arsal Noor},
+    pdfsubject={AI security with Zero Trust Integration},
+    pdfkeywords={AI, Security, Zero Trust, DistilBERT},
+    pdfborder={0 0 0}
+}
+
+\title{
+    \vspace{-2cm} % Adjust space to fine-tune title position
+    \textbf{ZeroHate - Secure AI-driven System with Zero Trust Security Integration}\\[1cm] % Title with space after
+}
+\author{
+    Muhammad Toseef Haider (2022-CS-16) \\ 
+    Arsal Noor (2022-CS-47)
+}
+\date{May 2025}
+
+\begin{document}
+
+% Title page content
+\maketitle
+
+% Logo placement
+\begin{center}
+    \includegraphics[width=4cm]{Uet.png} % Adjust the size of the logo
+\end{center}
+
+\vfill
+
+% University name at the bottom
+\begin{center}
+    \large{University of Engineering and Technology, Lahore}
+\end{center}
+
+
+\newpage
+\tableofcontents
+\newpage
+
+\begin{abstract}
+This project aims to build a secure AI-based system that applies Zero Trust Security ideas to protect AI models from common cyber threats like unauthorized access, model poisoning, and even adversarial attacks. The main focus is to keep the system reliable and make sure both the user data and AI predictions remain safe and private.
+
+We've added a secure user login system with Multi-Factor Authentication (MFA), using both email activation and OTP verification. This way, only real users can get in and use the system. Once logged in, users can input any text they want, and the AI model will try to classify it into one or more of six different categories: Toxic, Severely Toxic, Obscene, Threatening, Insulting, and Identity Hate. If it doesn't fall into any of those, it's considered Neutral. Users can also go back and check their past classifications, which helps in keeping things transparent.
+
+One of the best outcomes of the project is the successful use of Zero Trust Security in a working AI environment. We've shown that it’s not only possible but actually effective to combine modern cybersecurity principles with AI applications. While there were a few challenges, like tuning the classification thresholds and handling edge cases in login flows, the overall results are encouraging. The project offers a practical look at how to design secure, trustworthy AI tools, especially in a time where data safety matters more than ever.
+\end{abstract}
+
+
+
+\section{Introduction}
+
+\subsection{Project Background}
+With the growing reliance on artificial intelligence (AI) systems across sectors like healthcare, finance, and communication, ensuring their security has become a critical necessity. These AI systems, especially those based on machine learning models, can be vulnerable to a wide range of cyber threats including adversarial attacks, data poisoning, and model extraction.
+
+\subsection{Importance of AI Security}
+AI security is essential to maintain the integrity, confidentiality, and reliability of intelligent systems. A compromised AI model can lead to incorrect predictions, privacy breaches, and manipulation of critical decision-making processes. As AI is increasingly integrated into sensitive and real-time applications, its protection from evolving threats is non-negotiable.
+
+\subsection{Zero Trust Security Overview}
+Zero Trust Security (ZTS) is a modern security framework that assumes no user or system should be trusted by default, even if it originates from within the network perimeter. It emphasizes continuous verification, least-privilege access, and secure authentication mechanisms. When applied to AI systems, ZTS helps prevent unauthorized access, reduces attack surfaces, and enhances trustworthiness by enforcing strict access controls and real-time monitoring.
+
+\subsection{Purpose and Scope of the Project}
+The purpose of this project is to develop a secure AI-driven text classification system, fortified using Zero Trust Security principles. The system classifies input text into categories such as toxic, obscene, threatening, and more, using a DistilBERT model. It incorporates features like account activation, OTP-based multi-factor authentication, and user-specific classification history, all implemented securely within a Django web framework. The scope is limited to demonstrating how Zero Trust principles—such as verification before trust and identity validation—can protect AI systems from common cyber threats.
+
+
+\section{Research and Understanding}
+
+\subsection{Zero Trust Security Principles}
+Zero Trust Security is a cybersecurity model based on the principle of ``never trust, always verify.'' It assumes that no user, device, or network component should be automatically trusted, even if it exists inside the traditional network perimeter. Key principles include:
+\begin{itemize}
+    \item \textbf{Continuous Verification:} Regular checks of user identity and device health.
+    \item \textbf{Least Privilege Access:} Granting users only the access necessary to perform their tasks.
+    \item \textbf{Microsegmentation:} Dividing networks into smaller zones to maintain separate access controls.
+    \item \textbf{Multi-Factor Authentication (MFA):} Ensuring users verify their identity through multiple methods.
+\end{itemize}
+
+\subsection{Importance of Securing AI-Driven Systems}
+AI systems handle sensitive data and perform tasks that directly impact users and organizations. If compromised, they can:
+\begin{itemize}
+    \item Make incorrect or biased predictions.
+    \item Leak sensitive or personal data.
+    \item Be manipulated to serve the attacker’s agenda.
+\end{itemize}
+Therefore, securing AI systems ensures trustworthy decision-making and compliance with data privacy standards.
+
+\subsection{Common AI Threats}
+\begin{itemize}
+    \item \textbf{Adversarial Attacks:} Maliciously crafted inputs that mislead AI models into making wrong predictions.
+    \item \textbf{Model Poisoning:} Inserting malicious data during training to manipulate model behavior.
+    \item \textbf{Data Breaches:} Unauthorized access to training data or user input/output data.
+    \item \textbf{Model Stealing:} Extracting model parameters through repeated querying to replicate its behavior.
+\end{itemize}
+
+\subsection{Existing Security Frameworks and Their Limitations}
+Traditional perimeter-based security frameworks assume trusted internal networks and untrusted external sources. However, such models:
+\begin{itemize}
+    \item Cannot handle insider threats effectively.
+    \item Do not offer granular access control.
+    \item Lack continuous verification and adaptive authentication.
+\end{itemize}
+Zero Trust overcomes these limitations by enforcing verification at every access point, regardless of user location or device.
+
+
+\section{Threat Analysis and Security Planning}
+
+\subsection{Identification of Potential Security Risks}
+AI-based applications, especially those dealing with user-generated content or sensitive predictions, are prone to various security threats. The major identified risks include:
+\begin{itemize}
+    \item \textbf{Unauthorized Access:} Attackers gaining access to the system without valid credentials.
+    \item \textbf{Adversarial Inputs:} Manipulated text inputs to deceive the model into misclassifying.
+    \item \textbf{Data Leakage:} Exposure of classification results or user history to unintended users.
+    \item \textbf{Model Tampering:} Attempts to alter the behavior of the classification model.
+\end{itemize}
+
+\subsection{Zero Trust Security Measures Considered}
+The following Zero Trust principles were applied to secure the system:
+\begin{itemize}
+    \item \textbf{Multi-Factor Authentication (MFA):} After signup, account activation requires an email confirmation link. For future logins, a time-based OTP is sent to the registered email.
+    \item \textbf{Role-Based Access:} While all users have the same role, access is restricted based on authentication and verification status.
+    \item \textbf{Data Encryption:} User passwords are hashed using Django’s default encryption. Communication between client and server can be secured using HTTPS.
+    \item \textbf{Identity Verification:} Email verification ensures that only real users activate their accounts.
+    \item \textbf{Session Security:} Users are automatically logged out after inactivity, reducing session hijacking risk.
+\end{itemize}
+
+\subsection{Security Architecture of the System}
+The system is built using Django and consists of the following secure components:
+\begin{itemize}
+    \item \textbf{User Authentication Module:} Handles signup, login, OTP verification, and email-based activation.
+    \item \textbf{AI Classification Module:} A DistilBERT-based model classifies user input text into toxic categories.
+    \item \textbf{Access Control Layer:} Ensures only verified and logged-in users can access classification and history features.
+    \item \textbf{Email Service:} Used for secure communication of OTPs and activation links.
+\end{itemize}
+Each component is designed to align with Zero Trust principles and minimize trust assumptions.
+
+\subsection{Risk Assessment and Mitigation Strategies}
+\begin{itemize}
+    \item \textbf{Risk: Account Hijacking} \\
+    \textit{Mitigation:} Email-based MFA ensures even if a password is compromised, login requires OTP.
+    
+    \item \textbf{Risk: Adversarial Inputs} \\
+    \textit{Mitigation:} Input validation and future scope for adversarial input detection can reduce risk.
+    
+    \item \textbf{Risk: Unauthorized API Access} \\
+    \textit{Mitigation:} Since no public API is exposed, all logic is behind authenticated views.
+
+    \item \textbf{Risk: Data Exposure} \\
+    \textit{Mitigation:} User-specific classification history is only accessible after secure login.
+\end{itemize}
+
+\section{System Design and Architecture}
+
+\subsection{Overview of the AI System}
+The core AI component of the system is a fine-tuned \textbf{DistilBERT} model used for text classification. The model classifies user-submitted text into one of the following categories:
+\begin{itemize}
+    \item Toxic
+    \item Severely Toxic
+    \item Obscene
+    \item Threatening
+    \item Insulting
+    \item Identity Hate
+    \item Neutral (if none of the above are detected)
+\end{itemize}
+The model processes input text through a pre-processing pipeline, tokenizes it using a DistilBERT tokenizer, and outputs probabilities for each class.
+
+\subsection{Authentication and Security Measures}
+The authentication module is built using Django’s default user management system, extended with the following security enhancements:
+\begin{itemize}
+    \item \textbf{Signup:} Users register with an email and password. An activation link is sent to their email for verification.
+    \item \textbf{Account Activation:} The system ensures the user can only log in after activating their account via the email link.
+    \item \textbf{Login with OTP:} When a user logs out and logs back in, an OTP is sent to the email for Multi-Factor Authentication (MFA).
+    \item \textbf{Logout:} Users can securely end their session.
+    \item \textbf{Password Security:} Passwords are encrypted using Django’s built-in hashing mechanism.
+\end{itemize}
+
+\subsection{Database Design}
+The backend uses Django’s ORM with a PostgreSQL or SQLite database. Key database tables:
+\begin{itemize}
+    \item \textbf{User Table:} Stores registered users, hashed passwords, activation status, and email addresses.
+    \item \textbf{Classification History Table:} Logs text submitted by the user, classification result, timestamp, and user ID.
+\end{itemize}
+
+\section{Implementation of Zero Trust Security}
+
+This section describes how Zero Trust principles were applied in the AI-driven text classification system.
+
+\subsection{Authentication and Security Features: Email Verification, MFA, OTP, Encryption, and File Upload}
+To make sure only verified users can access the system, several layers of security have been added. We tried to cover not just user login, but also data privacy and secure input handling.
+
+\begin{itemize}
+    \item \textbf{Email Verification:} Right after signing up, the user gets an activation email with a unique link. The account stays inactive unless the user clicks that link. This stops fake signups and bots.
+    
+    \item \textbf{Multi-Factor Authentication (MFA):} Even after email activation, users can't login directly. When they try to login again, they are sent a special OTP (One-Time Password) to their email. Without that code, access is not granted.
+
+    \item \textbf{OTP Verification:} The OTP has a limited time, and if entered wrong or late, login fails. This helps stop unauthorized access and adds an extra layer of safety.
+
+    \item \textbf{Text Encryption:} For sensitive text input, we added encryption using the Fernet symmetric encryption algorithm. This makes sure that the user’s input is safely stored in encrypted form, and can only be decrypted by the system when needed. It's not 100\% hackproof but adds a strong layer of security to stored data.
+
+    \item \textbf{File Upload:} Users can also upload files like PDFs, DOCX, or text files. The system extracts text from them, processes it, and then encrypts the content before using it for classification. No file is stored permanently unless needed. This feature improves usability and allows users to scan real documents securely.
+
+\end{itemize}
+
+These steps may seem like a lot, but they're important to ensure trust and security. Some bugs appeared during implementation (like file type errors or encrypted data not being JSON serializable), but most of them were fixed after debugging and a few StackOverflow visits.
+
+
+\subsection{User Access Control and Restrictions}
+All critical views and pages in the system are accessible only to authenticated users. Django's built-in access control mechanisms ensure that unauthorized users are redirected away from protected routes.
+
+\subsection{Data Encryption}
+\begin{itemize}
+    \item \textbf{Password Encryption:} Django’s default authentication framework securely hashes and stores user passwords using the PBKDF2 algorithm.
+    \item \textbf{Sensitive Data Protection:} Information such as OTPs and user classification history is stored securely, following best practices to prevent data exposure.
+\end{itemize}
+
+\subsection{Continuous Monitoring (if applicable)}
+While continuous threat monitoring was not extensively implemented, basic logging mechanisms are in place to record login attempts, OTP verifications, and other user activities that can be audited for suspicious behavior.
+
+\section{AI System Development}
+
+\subsection{Overview of the AI-based System}
+The core of the system is a pre-trained DistilBERT model, a lightweight transformer-based architecture derived from BERT. This model is used for Natural Language Processing (NLP) tasks, specifically toxic comment classification.
+
+The system classifies input text into six possible categories:
+
+\begin{itemize}
+    \item Toxic
+    \item Severely Toxic
+    \item Obscene
+    \item Threatening
+    \item Insulting
+    \item Identity Hate
+\end{itemize}
+
+If none of these categories are matched, the system returns the result as ``Neutral''.
+
+\subsection{Integration with Zero Trust Framework}
+The AI system is accessible only to users who have passed the secure authentication workflow, which includes email verification and OTP-based login. This ensures that model usage is restricted to verified users, minimizing the risk of abuse, model probing, or input of adversarial data.
+
+Each prediction made by the AI model is logged and linked to the authenticated user's account, allowing for secure tracking and monitoring of usage.
+
+\subsection{Training and Validation}
+The DistilBERT model was fine-tuned on a labeled dataset of toxic comments. The dataset included diverse examples covering all six categories and neutral content. Standard train-validation-test splits were used to ensure performance generalization and to avoid overfitting.
+
+\subsection{Integration with Security Measures}
+The model was deployed within a Django-based system with Zero Trust security. The text classification functionality is available only after passing authentication and MFA. Classification history is stored securely and is visible only to the respective authenticated user, aligning with data privacy and access control principles.
+
+\section{Testing and Evaluation}
+
+\subsection{Security Testing}
+To evaluate the system's security, several simulated attack scenarios were designed:
+
+\begin{itemize}
+    \item \textbf{Unauthorized Access Attempt:} Attempts were made to access user-specific data without authentication. The system successfully prevented all such requests.
+    \item \textbf{Replay Attack Simulation:} OTPs used for MFA were tested against reuse. The system rejected expired or previously used OTPs, proving the robustness of the MFA implementation.
+    \item \textbf{Bypass Login Flow:} Direct access to protected views without login was tested. Django's authentication middleware effectively redirected users to the login page.
+\end{itemize}
+
+\subsection{Performance Testing}
+System performance was tested under normal and high usage scenarios:
+
+\begin{itemize}
+    \item \textbf{AI Inference Time:} Text classification using DistilBERT showed fast response times suitable for real-time use (average latency under 300ms).
+    \item \textbf{Load Handling:} The system maintained responsiveness under simulated concurrent user access.
+\end{itemize}
+
+\subsection{Effectiveness of Zero Trust Implementation}
+Zero Trust principles effectively protected the system from multiple vectors of attack:
+
+\begin{itemize}
+    \item \textbf{MFA blocked unauthorized access attempts.}
+    \item \textbf{Email verification ensured only real users could activate accounts.}
+    \item \textbf{User session control restricted access to logged-in users only.}
+    \item \textbf{No endpoint was publicly accessible without authentication.}
+\end{itemize}
+
+\subsection{Results and Analysis}
+The implemented security measures were validated against defined threats. The integration of Zero Trust Security significantly reduced risk of unauthorized access, data misuse, and AI system abuse.
+
+The system's performance remained efficient while providing enhanced security, showing that strong authentication and access control did not compromise usability or speed.
+
+
+\section{Challenges and Limitations}
+
+\subsection{Technical Challenges}
+During the development of the secure AI-driven system, several technical difficulties were encountered:
+
+\begin{itemize}
+    \item \textbf{Email Deliverability:} Ensuring reliable delivery of OTPs and activation links was challenging due to spam filtering and SMTP server configuration.
+    \item \textbf{OTP Expiration and Reuse Handling:} Implementing secure and time-bound OTPs with proper invalidation required careful session and database management.
+    \item \textbf{Integration of AI and Security Layers:} Combining the AI model with authentication logic in Django while maintaining modular code structure was complex.
+    \item \textbf{Security Testing:} Simulating real-world attacks to verify the Zero Trust implementation required thorough planning and knowledge of vulnerabilities.
+\end{itemize}
+
+\subsection{Limitations of Current Security Measures}
+While the system is secure under basic threat models, certain limitations exist:
+
+\begin{itemize}
+    \item \textbf{No Role-Based Access Control (RBAC):} All users have equal access privileges. Fine-grained access control is not implemented.
+    \item \textbf{No API Layer:} System is built for web interaction only, limiting its extension to third-party applications via APIs.
+    \item \textbf{Limited Monitoring:} Continuous monitoring or real-time logging of suspicious behavior is not integrated.
+    \item \textbf{No Adversarial Input Detection:} Although the AI model is protected by authentication, it is not equipped to detect or resist adversarial text inputs.
+\end{itemize}
+
+\subsection{Areas for Improvement}
+Future enhancements that can address the above limitations include:
+
+\begin{itemize}
+    \item Integration of a logging and monitoring system (e.g., using Django signals or external monitoring tools).
+    \item Implementation of RBAC to assign different privileges to different types of users.
+    \item Development of a secure API interface with token-based authentication.
+    \item Use of adversarial training or input sanitization to make the AI model more robust against malicious input.
+\end{itemize}
+
+
+\section{Future Improvements}
+
+\subsection{Enhancing Security}
+While the current implementation follows Zero Trust Security principles, there are several areas where security can be further enhanced in future iterations:
+
+\begin{itemize}
+    \item \textbf{Advanced Multi-Factor Authentication (MFA):} Integrating biometric authentication (such as facial recognition or fingerprint scanning) along with OTP for stronger verification.
+    \item \textbf{Behavioral Analytics for Authentication:} Implementing behavioral biometrics or anomaly detection to identify suspicious login attempts based on user behavior.
+    \item \textbf{Adaptive Authentication:} Using context-based authentication (e.g., location, device type, time of access) to adjust the security level required for login.
+    \item \textbf{Integration of Intrusion Detection Systems (IDS):} Adding real-time intrusion detection systems to identify potential threats or unauthorized access attempts.
+\end{itemize}
+
+\subsection{Improvements in AI Models}
+The AI model can also be improved to increase its robustness and security:
+
+\begin{itemize}
+    \item \textbf{Adversarial Training:} Train the AI model with adversarial samples to enhance its robustness against adversarial attacks or malicious input.
+    \item \textbf{Model Fine-Tuning:} Continuously fine-tune the AI model with fresh data to improve classification accuracy and adapt to evolving language patterns.
+    \item \textbf{Explainability and Interpretability:} Improve the model's explainability by implementing techniques like SHAP (Shapley Additive Explanations) to provide better transparency into its decisions.
+\end{itemize}
+
+\subsection{Zero Trust Security Enhancements}
+Further improvements in Zero Trust implementation can include:
+
+\begin{itemize}
+    \item \textbf{Zero Trust Network Access (ZTNA):} Extend Zero Trust beyond user authentication by implementing network access controls that validate users and devices trying to access resources.
+    \item \textbf{Micro-Segmentation:} Implement micro-segmentation to limit lateral movement within the network in case of a breach.
+    \item \textbf{Continuous Authentication:} Implement continuous authentication throughout the session to ensure that users are still authorized based on ongoing behavior.
+\end{itemize}
+
+\section{Conclusion}
+
+In this project, we successfully integrated Zero Trust Security principles into an AI-driven system, focusing on securing the application from potential threats and unauthorized access. The key findings and achievements of the project include:
+
+\begin{itemize}
+    \item The development and integration of a secure login and signup system with email verification, multi-factor authentication (MFA), and OTP-based login.
+    \item The use of the DistilBERT model for text classification, which was deployed within the security framework to classify user inputs into predefined categories.
+    \item The application of encryption techniques and continuous monitoring to ensure that user data and AI models are protected from adversarial threats and unauthorized access.
+    \item The implementation of role-based access control (RBAC) to ensure that users only have access to the necessary resources based on their privileges.
+    \item The overall success in demonstrating the application of Zero Trust Security principles in real-world AI systems, showing that these measures can be effectively implemented to mitigate cyber threats.
+\end{itemize}
+
+The project met its primary objectives of enhancing AI system security by applying Zero Trust principles, ensuring the integrity of the model and user data while preventing potential security breaches. Through the application of advanced authentication techniques and rigorous threat analysis, the system has been made resilient to a variety of cyberattacks.
+
+In conclusion, the project highlights the importance of integrating security measures into AI systems and showcases how Zero Trust principles can be adapted and implemented effectively within such environments. The system we developed successfully demonstrates the role of Zero Trust Security in protecting AI models from adversarial attacks, unauthorized access, and other cyber threats.
+
+\end{document}

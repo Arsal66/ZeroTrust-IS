@@ -1,0 +1,182 @@
+{% extends 'ZeroHate/index.html' %}
+
+{% block title %}Dashboard - ZeroHate{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="welcome-section">
+        <h2>Welcome, {{ user.username }}</h2>
+        <p>Use the text classification tool to analyze content for toxicity</p>
+    </div>
+    
+    <div class="classifier-card">
+        <div class="card-header">
+            <h3>Text Classifier</h3>
+            <p>Enter text to analyze for toxic content</p>
+        </div>
+        
+        <div class="input-section">
+            <form id="classification-form" method="POST">
+                {% csrf_token %}
+                <div class="form-field">
+                    <label for="input-text">Text to classify</label>
+                    <textarea id="input-text" rows="5" placeholder="Enter text to analyze..." required></textarea>
+                </div>
+        
+                <div class="form-actions">
+                    <button type="submit" id="classify-btn" class="btn btn-primary">
+                        <span class="btn-text">Analyze Text</span>
+                        <span class="btn-loader hidden"></span>
+                    </button>
+                </div>
+            </form>
+        
+            <!-- Simple File Upload Button -->
+            <div class="file-input-container">
+                <button id="upload-file-btn" class="upload-btn">Upload File</button>
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <input type="file" id="file-upload" accept=".pdf,.docx,.txt" style="display:none">
+            </div>
+        </div>        
+
+        <div id="results-container" class="results-section"></div>
+        
+        <div id="results-section" class="results-section hidden">
+            <h4>Classification Results</h4>
+            
+            <div id="result-neutral" class="result-neutral hidden">
+                <div class="result-icon">✓</div>
+                <p>The text appears to be neutral with no toxic content detected.</p>
+            </div>
+            
+            <div id="result-toxic" class="result-toxic hidden">
+                <p>The following types of toxicity were detected:</p>
+                <div class="toxicity-grid">
+                    <div class="toxicity-card" data-type="toxic">
+                        <h5>Toxic</h5>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="score">0%</span>
+                    </div>
+                    
+                    <div class="toxicity-card" data-type="severe_toxic">
+                        <h5>Severely Toxic</h5>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="score">0%</span>
+                    </div>
+                    
+                    <div class="toxicity-card" data-type="obscene">
+                        <h5>Obscene</h5>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="score">0%</span>
+                    </div>
+                    
+                    <div class="toxicity-card" data-type="threat">
+                        <h5>Threatening</h5>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="score">0%</span>
+                    </div>
+                    
+                    <div class="toxicity-card" data-type="insult">
+                        <h5>Insulting</h5>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="score">0%</span>
+                    </div>
+                    
+                    <div class="toxicity-card" data-type="identity_hate">
+                        <h5>Identity Hate</h5>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="score">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if recent_classifications %}
+    <div class="history-card">
+        <div class="card-header">
+            <h3>Recent Classifications</h3>
+        </div>
+        
+        <div class="history-list">
+            {% for classification in recent_classifications %}
+            <div class="history-item">
+                <div class="history-content">
+                    <p class="history-text">{{ classification.input_text|truncatechars:100 }}</p>
+                    <div class="history-meta">
+                        <span class="history-date">{{ classification.created_at|date:"M d, Y H:i" }}</span>
+                        <span class="history-result {% if classification.is_neutral %}neutral{% else %}toxic{% endif %}">
+                            {% if classification.is_neutral %}Neutral{% else %}Toxic{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="history-details">
+                    {% if not classification.is_neutral %}
+                    <div class="toxicity-mini-grid">
+                        {% with max_value=classification.toxic %}
+                            {% if classification.severe_toxic > max_value %}
+                                {% with max_value=classification.severe_toxic %}
+                                {% endwith %}
+                            {% endif %}
+                            
+                            {% if classification.obscene > max_value %}
+                                {% with max_value=classification.obscene %}
+                                {% endwith %}
+                            {% endif %}
+                            
+                            {% if classification.threat > max_value %}
+                                {% with max_value=classification.threat %}
+                                {% endwith %}
+                            {% endif %}
+                            
+                            {% if classification.insult > max_value %}
+                                {% with max_value=classification.insult %}
+                                {% endwith %}
+                            {% endif %}
+                            
+                            {% if classification.identity_hate > max_value %}
+                                {% with max_value=classification.identity_hate %}
+                                {% endwith %}
+                            {% endif %}
+                            
+                            {% if max_value > 0.2 %}
+                                {% if max_value == classification.toxic %}
+                                    <span class="toxicity-tag">Toxic</span>
+                                {% elif max_value == classification.severe_toxic %}
+                                    <span class="toxicity-tag">Severely Toxic</span>
+                                {% elif max_value == classification.obscene %}
+                                    <span class="toxicity-tag">Obscene</span>
+                                {% elif max_value == classification.threat %}
+                                    <span class="toxicity-tag">Threatening</span>
+                                {% elif max_value == classification.insult %}
+                                    <span class="toxicity-tag">Insulting</span>
+                                {% elif max_value == classification.identity_hate %}
+                                    <span class="toxicity-tag">Identity Hate</span>
+                                {% endif %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endif %}
+                </div>                
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

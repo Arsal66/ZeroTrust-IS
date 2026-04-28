@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation Sent</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 15px 0;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Confirmation Email Sent!</h1>
+        <p>Thank you for signing up. A confirmation email has been sent to your email address. Please check your inbox and click the link to verify your account.</p>
+        <p>If you don't see the email, please check your spam folder.</p>
+        <p><a href="{% url 'login' %}">Return to Login</a></p>
+    </div>
+</body>
+</html>
